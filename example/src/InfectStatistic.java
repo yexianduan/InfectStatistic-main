@@ -36,6 +36,8 @@ public class InfectStatistic
                 {
                     type.add(args[i+1]);
                     i++;
+                    if(i==args.length-1)
+                        break;
                 }
                 i--;
             }
@@ -46,6 +48,8 @@ public class InfectStatistic
                 {
                     cmd_province.add(args[i+1]);
                     i++;
+                    if(i==args.length-1)
+                        break;
                 }
                 i--;
             }
@@ -70,7 +74,6 @@ public class InfectStatistic
         if(file_list==null)
             return;
         for (int i = 0; i < file_list.length; i++) {
-            System.out.println(i);
             File log_file = file_list[i];
             String filename = log_file.getName();
             String[] log_name=filename.trim().split("\\.");
@@ -189,35 +192,174 @@ public class InfectStatistic
     private static void WriteFile(String file_path)
     {
         int infected_num=0,suspected_num=0,cure_num=0,death_num=0;
-       for(int i=0;i<province.length;i++)
-       {
-           List<Integer> list=province_map.get(province[i]);
-           infected_num=infected_num+list.get(0);
-           suspected_num=suspected_num+list.get(1);
-           cure_num=cure_num+list.get(2);
-           death_num=death_num+list.get(3);
-       }
-       if(cmd_province.contains("全国")||cmd_province.size()==0)
-       System.out.println("全国 "+"感染患者"+infected_num+"人 "+"疑似患者"+suspected_num+"人 "+"治愈"+cure_num+"人 "
-               +"死亡"+death_num+"人 ");
-       for(int i=0;i<province.length;i++)
-       {
-           List<Integer> list=province_map.get(province[i]);
-           if(cmd_province.size()==0&&((list.get(0)!=0)||(list.get(1)!=0)||(list.get(2)!=0)||(list.get(3)!=0)))
-           {
-               if()
-               System.out.println(province[i]+" "+"感染患者"+infected_num+"人 "+"疑似患者"+suspected_num+"人 "+"治愈"+cure_num+"人 "
-                       +"死亡"+death_num+"人 ");
-           }
-       }
+        for(int i=0;i<province.length;i++)
+        {
+            List<Integer> list = province_map.get(province[i]);
+            infected_num = infected_num + list.get(0);
+            suspected_num = suspected_num + list.get(1);
+            cure_num = cure_num + list.get(2);
+            death_num = death_num + list.get(3);
+        }
+        if(cmd_province.contains("全国")||cmd_province.size()==0)
+        {
+            String name="全国";
+            if(type.size()==0)
+               System.out.println("全国"+" "+"感染患者"+infected_num+"人 "+"疑似患者"+suspected_num+"人 "+"治愈"+cure_num+"人 "
+                        +"死亡"+death_num+"人 ");
+            else
+            {
+                for (int n = 0; n < type.size(); n++) {
+                    if (type.get(n).equals("ip"))
+                        name = name + " 感染患者" + infected_num + "人";
+                    if (type.get(n).equals("sp"))
+                        name = name + " 疑似患者" + suspected_num + "人";
+                    if (type.get(n).equals("cure"))
+                        name = name + " 治愈" + cure_num + "人";
+                    if (type.get(n).equals("dead"))
+                        name = name + " 死亡" + death_num + "人";
+                }
+                System.out.println(name);
+            }
+        }
+        for(int i=0;i<province.length;i++)
+        {
+            List<Integer> list=province_map.get(province[i]);
+            infected_num=list.get(0);
+            suspected_num=list.get(1);
+            cure_num=list.get(2);
+            death_num=list.get(3);
+            if(cmd_province.size()==0&&((list.get(0)!=0)||(list.get(1)!=0)||(list.get(2)!=0)||(list.get(3)!=0)))
+            {
+                if(type.size()==0)
+                    System.out.println(province[i]+" "+"感染患者"+infected_num+"人 "+"疑似患者"+suspected_num+"人 "+"治愈"+cure_num+"人 "
+                            +"死亡"+death_num+"人 ");
+                else
+                {
+                    String name=province[i];
+                    for(int n=0;n<type.size();n++)
+                    {
+                        if(type.get(n).equals("ip"))
+                            name=name+" 感染患者"+infected_num+"人";
+                        if(type.get(n).equals("sp"))
+                            name=name+" 疑似患者"+suspected_num+"人";
+                        if(type.get(n).equals("cure"))
+                            name=name+" 治愈"+cure_num+"人";
+                        if(type.get(n).equals("dead"))
+                            name=name+" 死亡"+death_num+"人";
+                    }
+                    System.out.println(name);
+                }
+            }
+            else if(cmd_province.contains(province[i]))
+            {
+                if(type.size()==0)
+                    System.out.println(province[i]+" "+"感染患者"+infected_num+"人 "+"疑似患者"+suspected_num+"人 "+"治愈"+cure_num+"人 "
+                            +"死亡"+death_num+"人 ");
+                else
+                {
+                    String name=province[i];
+                    for(int n=0;n<type.size();n++)
+                    {
+                        if(type.get(n).equals("ip"))
+                            name=name+" 感染患者"+infected_num+"人";
+                        if(type.get(n).equals("sp"))
+                            name=name+" 疑似患者"+suspected_num+"人";
+                        if(type.get(n).equals("cure"))
+                            name=name+" 治愈"+cure_num+"人";
+                        if(type.get(n).equals("dead"))
+                            name=name+" 死亡"+death_num+"人";
+                    }
+                    System.out.println(name+"\n");
+                }
+            }
+        }
         try {
             File writeName = new File(file_path); // 相对路径，如果没有则要建立一个新的output.txt文件
             writeName.createNewFile(); // 创建新文件,有同名的文件的话直接覆盖
             try (FileWriter writer = new FileWriter(writeName);
                  BufferedWriter out = new BufferedWriter(writer)
             ) {
-                    out.write("全国 " + "感染患者" + infected_num + "人 " + "疑似患者" + suspected_num + "人 " + "治愈" + cure_num + "人 "
-                            + "死亡" + death_num + "人 ");
+                for(int i=0;i<province.length;i++)
+                {
+                    List<Integer> list = province_map.get(province[i]);
+                    infected_num = infected_num + list.get(0);
+                    suspected_num = suspected_num + list.get(1);
+                    cure_num = cure_num + list.get(2);
+                    death_num = death_num + list.get(3);
+                }
+                if(cmd_province.contains("全国")||cmd_province.size()==0)
+                {
+                    String name="全国";
+                    if(type.size()==0)
+                        out.write("全国"+" "+"感染患者"+infected_num+"人 "+"疑似患者"+suspected_num+"人 "+"治愈"+cure_num+"人 "
+                                +"死亡"+death_num+"人 "+"\n");
+                    else
+                    {
+                        for (int n = 0; n < type.size(); n++) {
+                            if (type.get(n).equals("ip"))
+                                name = name + " 感染患者" + infected_num + "人";
+                            if (type.get(n).equals("sp"))
+                                name = name + " 疑似患者" + suspected_num + "人";
+                            if (type.get(n).equals("cure"))
+                                name = name + " 治愈" + cure_num + "人";
+                            if (type.get(n).equals("dead"))
+                                name = name + " 死亡" + death_num + "人";
+                        }
+                        out.write(name+"\n");
+                    }
+                }
+                for(int i=0;i<province.length;i++)
+                {
+                    List<Integer> list=province_map.get(province[i]);
+                    infected_num=list.get(0);
+                    suspected_num=list.get(1);
+                    cure_num=list.get(2);
+                    death_num=list.get(3);
+                    if(cmd_province.size()==0&&((list.get(0)!=0)||(list.get(1)!=0)||(list.get(2)!=0)||(list.get(3)!=0)))
+                    {
+                        if(type.size()==0)
+                            out.write(province[i]+" "+"感染患者"+infected_num+"人 "+"疑似患者"+suspected_num+"人 "+"治愈"+cure_num+"人 "
+                                    +"死亡"+death_num+"人 "+"\n");
+                        else
+                        {
+                            String name=province[i];
+                            for(int n=0;n<type.size();n++)
+                            {
+                                if(type.get(n).equals("ip"))
+                                    name=name+" 感染患者"+infected_num+"人";
+                                if(type.get(n).equals("sp"))
+                                    name=name+" 疑似患者"+suspected_num+"人";
+                                if(type.get(n).equals("cure"))
+                                    name=name+" 治愈"+cure_num+"人";
+                                if(type.get(n).equals("dead"))
+                                    name=name+" 死亡"+death_num+"人";
+                            }
+                            out.write(name+"\n");
+                        }
+                    }
+                    else if(cmd_province.contains(province[i]))
+                    {
+                        if(type.size()==0)
+                            out.write(province[i]+" "+"感染患者"+infected_num+"人 "+"疑似患者"+suspected_num+"人 "+"治愈"+cure_num+"人 "
+                                    +"死亡"+death_num+"人 "+"\n");
+                        else
+                        {
+                            String name=province[i];
+                            for(int n=0;n<type.size();n++)
+                            {
+                                if(type.get(n).equals("ip"))
+                                    name=name+" 感染患者"+infected_num+"人";
+                                if(type.get(n).equals("sp"))
+                                    name=name+" 疑似患者"+suspected_num+"人";
+                                if(type.get(n).equals("cure"))
+                                    name=name+" 治愈"+cure_num+"人";
+                                if(type.get(n).equals("dead"))
+                                    name=name+" 死亡"+death_num+"人";
+                            }
+                            out.write(name+"\n");
+                        }
+                    }
+                }
                 out.flush(); // 把缓存区内容压入文件
             }
         } catch (IOException e) {

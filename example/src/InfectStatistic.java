@@ -79,10 +79,10 @@ public class InfectStatistic
             String[] log_name=filename.trim().split("\\.");
             if (date.equals("")||CompareDate(date, log_name[0])) {
                 try {
-                    FileReader reader = new FileReader(log_file);
+                    InputStreamReader reader = new InputStreamReader(new FileInputStream(log_file),"UTF-8");
                     BufferedReader br = new BufferedReader(reader);
-                    String line;
-                    while ((line = br.readLine()) != null) {
+                    String line=br.readLine();
+                    while (line!= null&&!line.startsWith("//")) {
                         String[] arr = line.trim().split("\\s+");//字符串按空格分割开
                         String[] str = arr[arr.length - 1].trim().split("人");
                         int people_num = Integer.parseInt(str[0].trim());//获得人数
@@ -101,7 +101,7 @@ public class InfectStatistic
                                 province_map.put(arr[0], list);
                             }
                         }
-                        if (arr[2].equals("流入")) {
+                        else if (arr[2].equals("流入")) {
                             if (arr[1].equals("感染患者")) {
                                 List<Integer> list = new ArrayList<>();
                                 list.addAll(province_map.get(arr[0]));
@@ -109,25 +109,25 @@ public class InfectStatistic
                                 list.set(0, value - people_num);
                                 province_map.put(arr[0], list);
                                 List<Integer> list1 = new ArrayList<>();
-                                list.addAll(province_map.get(arr[3]));
+                                list1.addAll(province_map.get(arr[3]));
                                 int value1 = list1.get(0).intValue();
                                 list1.set(0, value1 + people_num);
                                 province_map.put(arr[3], list1);
                             }
-                            if (arr[1].equals("疑似患者")) {
+                            else if (arr[1].equals("疑似患者")) {
                                 List<Integer> list = new ArrayList<>();
                                 list.addAll(province_map.get(arr[0]));
                                 int value = list.get(1).intValue();
                                 list.set(1, value - people_num);
                                 province_map.put(arr[0], list);
                                 List<Integer> list1 = new ArrayList<>();
-                                list.addAll(province_map.get(arr[3]));
+                                list1.addAll(province_map.get(arr[3]));
                                 int value1 = list1.get(1).intValue();
                                 list1.set(1, value1 + people_num);
                                 province_map.put(arr[3], list1);
                             }
                         }
-                        if (arr[1].equals("死亡")) {
+                        else if (arr[1].equals("死亡")) {
                             List<Integer> list = new ArrayList<>();
                             list.addAll(province_map.get(arr[0]));
                             int value = list.get(3).intValue();
@@ -136,7 +136,7 @@ public class InfectStatistic
                             list.set(0, value1 - people_num);
                             province_map.put(arr[0], list);
                         }
-                        if (arr[1].equals("治愈")) {
+                        else if (arr[1].equals("治愈")) {
                             List<Integer> list = new ArrayList<>();
                             list.addAll(province_map.get(arr[0]));
                             int value = list.get(2).intValue();
@@ -145,22 +145,23 @@ public class InfectStatistic
                             list.set(0, value1 - people_num);
                             province_map.put(arr[0], list);
                         }
-                        if (arr[1].equals("排除")) {
+                        else if (arr[1].equals("排除")) {
                             List<Integer> list = new ArrayList<>();
                             list.addAll(province_map.get(arr[0]));
                             int value = list.get(1).intValue();
-                            list.set(1, value + people_num);
-                            province_map.put(arr[0], list);
-                        }
-                        if (arr[1].equals("疑似患者")) {
-                            List<Integer> list = new ArrayList<>();
-                            list.addAll(province_map.get(arr[0]));
-                            int value = list.get(1).intValue();
-                            int value1 = list.get(0).intValue();
                             list.set(1, value - people_num);
-                            list.set(1, value1 + people_num);
                             province_map.put(arr[0], list);
                         }
+                        else if (arr[1].equals("疑似患者")&&arr[2].equals("确诊感染")) {
+                            List<Integer> list = new ArrayList<>();
+                            list.addAll(province_map.get(arr[0]));
+                            int value = list.get(1).intValue();//疑似
+                            int value1 = list.get(0).intValue();//确诊
+                            list.set(1, value - people_num);
+                            list.set(0, value1 + people_num);
+                            province_map.put(arr[0], list);
+                        }
+                         line=br.readLine();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -273,6 +274,7 @@ public class InfectStatistic
                 }
             }
         }
+        System.out.println("// 该文档并非真实数据，仅供测试使用");
         try {
             File writeName = new File(file_path); // 相对路径，如果没有则要建立一个新的output.txt文件
             writeName.createNewFile(); // 创建新文件,有同名的文件的话直接覆盖
@@ -360,6 +362,7 @@ public class InfectStatistic
                         }
                     }
                 }
+                out.write("// 该文档并非真实数据，仅供测试使用");
                 out.flush(); // 把缓存区内容压入文件
             }
         } catch (IOException e) {
